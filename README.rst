@@ -4,6 +4,8 @@ cusp-edap
 .. image:: https://travis-ci.org/Mohitsharma44/cusp-edap.svg?branch=master
          :target: https://travis-ci.org/Mohitsharma44/cusp-edap
 
+.. image:: https://coveralls.io/repos/github/Mohitsharma44/cusp-edap/badge.svg?branch=master 
+         :target: https://coveralls.io/github/Mohitsharma44/cusp-edap?branch=master
 
 Add a short description here!
 
