@@ -1,6 +1,7 @@
 =========
 cusp-edap
 =========
+.. image:: https://travis-ci.org/Mohitsharma44/cusp-edap.svg?branch=master
 
 
 Add a short description here!
