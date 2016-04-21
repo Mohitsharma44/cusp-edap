@@ -1,0 +1,3866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link href='//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,400italic' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" type="text/css" href="http://localhost:8000/theme/stylesheet/style.min.css">
+
+  <link rel="stylesheet" type="text/css" href="http://localhost:8000/theme/stylesheet/pygments.min.css">
+  <link rel="stylesheet" type="text/css" href="http://localhost:8000/theme/stylesheet/font-awesome.min.css">
+
+
+
+
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="" />
+
+<meta name="author" content="mohit sharma" />
+<meta name="description" content="test ipynb to rest" />
+<meta name="keywords" content="python, tutorials">
+<meta property="og:site_name" content="cusp-edap"/>
+<meta property="og:title" content="My super title"/>
+<meta property="og:description" content="test ipynb to rest"/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:url" content="http://localhost:8000/imdb.html"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2016-04-20 10:20:00-04:00"/>
+<meta property="article:modified_time" content="2016-04-21 12:40:00-04:00"/>
+<meta property="article:author" content="http://localhost:8000/author/mohit-sharma.html">
+<meta property="article:section" content="pandas"/>
+<meta property="article:tag" content="python"/>
+<meta property="article:tag" content="tutorials"/>
+<meta property="og:image" content="">
+  <title>cusp-edap &ndash; My super title</title>
+</head>
+<body>
+  <aside>
+    <div>
+      <a href="http://localhost:8000">
+        <img src="http://localhost:8000/theme/img/profile.png" alt="" title="">
+      </a>
+      <h1><a href="http://localhost:8000"></a></h1>
+      <p></p>
+      <nav>
+        <ul class="list">
+          <li><a href="http://getpelican.com/" target="_blank">Pelican</a></li>
+          <li><a href="http://python.org/" target="_blank">Python.org</a></li>
+          <li><a href="http://jinja.pocoo.org/" target="_blank">Jinja2</a></li>
+          <li><a href="#" target="_blank">You can modify those links in your config file</a></li>
+        </ul>
+      </nav>
+      <ul class="social">
+        <li><a class="sc-linkedin" href="https://linkedin.com/in/mohitsharma1990" target="_blank"><i class="fa fa-linkedin"></i></a></li>
+        <li><a class="sc-Another social link" href="#" target="_blank"><i class="fa fa-Another social link"></i></a></li>
+      </ul>
+    </div>
+  </aside>
+  <main>
+    <nav>
+      <a href="http://localhost:8000">Home</a>
+      <a href="/archives.html">Archives</a>
+      <a href="/categories.html">Categories</a>
+      <a href="/tags.html">Tags</a>
+    </nav>
+
+<article>
+  <header>
+    <h1 id="imdb">My super title</h1>
+    <p>Posted on Wed 20 April 2016 in <a href="http://localhost:8000/category/pandas.html">pandas</a></p>
+  </header>
+  <div>
+    <pre class="code python literal-block">
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="kn">as</span> <span class="nn">sns</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+</pre>
+<pre class="literal-block">
+/usr/local/lib/python2.7/site-packages/IPython/html.py:14: ShimWarning: The <cite>IPython.html</cite> package has been deprecated. You should import from <cite>notebook</cite> instead. <cite>IPython.html.widgets</cite> has moved to <cite>ipywidgets</cite>.
+  &quot;<cite>IPython.html.widgets</cite> has moved to <cite>ipywidgets</cite>.&quot;, ShimWarning)
+</pre>
+<p><tt class="docutils literal">%matplotlib inline</tt> gives the plotting lib permission to draw
+diagrams inside the notebooks rather than popping out new figure windows
+everytime which is kind of annoying.</p>
+<div class="section" id="encoding">
+<h2>Encoding</h2>
+<p>The data that we have in csv format might or might not work for you. It
+actually depends on the system settings. Generally the system should
+tell python to expect all text files to be encoded in utf-8 format
+(unicode encoding). not all systems are configured in such way. In case
+you get some error loading displaying the data, you can tell python to
+set encoding as <tt class="docutils literal"><span class="pre">'utf-8'</span></tt>. (Actors/ movie names can have international
+characters). Sometimes this might be an issue in displaying even after
+loading. To make sure this doesn't happen, you can do:</p>
+<pre class="literal-block">
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+</pre>
+</div>
+<div class="section" id="data">
+<h2>Data</h2>
+<p>Almost all the examples will include two dataframes: * <tt class="docutils literal">titles.csv</tt>
+(Name and year of release of all the famous movies in imdb) *
+<tt class="docutils literal">cast.csv</tt> (this might have a movie appear many given times because
+title and year of movie will appear once for each person who is listed
+in credits for the movie. n is the position of the credits where the
+actor/actress appears)</p>
+<pre class="code python literal-block">
+<span class="c1"># Lets load the Movie titles</span>
+<span class="n">titles</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_csv</span><span class="p">(</span><span class="s1">'data/titles.csv'</span><span class="p">,</span>
+                               <span class="n">index_col</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                               <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span>
+</pre>
+<pre class="code python literal-block">
+<span class="c1"># Load all the casts in the movies</span>
+<span class="n">cast</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_csv</span><span class="p">(</span><span class="s1">'data/cast.csv'</span><span class="p">,</span>
+                            <span class="n">index_col</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                            <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span>
+</pre>
+<pre class="code python literal-block">
+<span class="n">cast</span><span class="p">[</span><span class="n">cast</span><span class="o">.</span><span class="n">title</span> <span class="o">==</span> <span class="s2">&quot;Love&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre>
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>title</th>
+      <th>year</th>
+      <th>name</th>
+      <th>type</th>
+      <th>character</th>
+      <th>n</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>49605</th>
+      <td>Love</td>
+      <td>2003</td>
+      <td>Brian (XIV) Anderson</td>
+      <td>actor</td>
+      <td>Prison Doctor</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>63909</th>
+      <td>Love</td>
+      <td>2003</td>
+      <td>Anthony K. Aquino</td>
+      <td>actor</td>
+      <td>Prison Guard #4</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>69164</th>
+      <td>Love</td>
+      <td>2005</td>
+      <td>Eugenio (II) Arias</td>
+      <td>actor</td>
+      <td>Receptionist</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <th>95120</th>
+      <td>Love</td>
+      <td>2008</td>
+      <td>Fauzi Baadila</td>
+      <td>actor</td>
+      <td>Rama</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>107887</th>
+      <td>Love</td>
+      <td>2011</td>
+      <td>Steve Bakken</td>
+      <td>actor</td>
+      <td>Doctor</td>
+      <td>36</td>
+    </tr>
+  </tbody>
+</table>
+</div><p>This might have a given movie appear many times because the title and
+year of movie will appear once for each person who is listed in the
+movie.</p>
+<p>If you simply mention the name of the df then not all the contents of
+the df will be displayed. Instead it will show some from beginning and
+some from the end. It basically shows you an excerpt of the df</p>
+<pre class="code python literal-block">
+<span class="n">titles</span>
+</pre>
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>title</th>
+      <th>year</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>The Rising Son</td>
+      <td>1990</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Ashes of Kukulcan</td>
+      <td>2016</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>The Thousand Plane Raid</td>
+      <td>1969</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Crucea de piatra</td>
+      <td>1993</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Country</td>
+      <td>2000</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Gaiking II</td>
+      <td>2011</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>The Fresh Air Will Do You Good</td>
+      <td>2008</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Alex in Wonderland</td>
+      <td>1970</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>Women's Prison</td>
+      <td>1955</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>Do Outro Lado do Mundo</td>
+      <td>2008</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>Severny variant</td>
+      <td>1974</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>Slave by Name</td>
+      <td>2017</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>Charlie's Ear</td>
+      <td>1992</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>Insaaf Main Karoonga</td>
+      <td>1985</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>Poka Makorer Ghar Bosoti</td>
+      <td>1996</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>Hi, Buddy</td>
+      <td>1943</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>Los siete locos</td>
+      <td>1973</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>Panic Room</td>
+      <td>2002</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>Io sono un autarchico</td>
+      <td>1976</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>Mr. Justice Raffles</td>
+      <td>1921</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>Mahapurush</td>
+      <td>1965</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>Maa Durga Shakti</td>
+      <td>1999</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>Patria</td>
+      <td>1917</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>Passenger Side</td>
+      <td>2009</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>Ang pumatay ng dahil sa iyo</td>
+      <td>1989</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>Conflict of Interest</td>
+      <td>1993</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>The Syndicate</td>
+      <td>2011</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>Suzanne, professeur de flirt</td>
+      <td>1916</td>
+    </tr>
+    <tr>
+      <th>28</th>
+      <td>Arrive Alive</td>
+      <td>1990</td>
+    </tr>
+    <tr>
+      <th>29</th>
+      <td>Tera Mera Saath Rahen</td>
+      <td>2001</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>216507</th>
+      <td>Fred &amp; Vinnie</td>
+      <td>2011</td>
+    </tr>
+    <tr>
+      <th>216508</th>
+      <td>The Outcast</td>
+      <td>1984</td>
+    </tr>
+    <tr>
+      <th>216509</th>
+      <td>Diary of a Mad Black Woman</td>
+      <td>2005</td>
+    </tr>
+    <tr>
+      <th>216510</th>
+      <td>The Second Coming (IV)</td>
+      <td>2014</td>
+    </tr>
+    <tr>
+      <th>216511</th>
+      <td>The Minister of Chance</td>
+      <td>2016</td>
+    </tr>
+    <tr>
+      <th>216512</th>
+      <td>Dan xin pu</td>
+      <td>1980</td>
+    </tr>
+    <tr>
+      <th>216513</th>
+      <td>Druzina</td>
+      <td>2016</td>
+    </tr>
+    <tr>
+      <th>216514</th>
+      <td>The Legend of Kate Kensington</td>
+      <td>2015</td>
+    </tr>
+    <tr>
+      <th>216515</th>
+      <td>Time of the Comet</td>
+      <td>2008</td>
+    </tr>
+    <tr>
+      <th>216516</th>
+      <td>Agreement</td>
+      <td>1980</td>
+    </tr>
+    <tr>
+      <th>216517</th>
+      <td>Monsters University</td>
+      <td>2013</td>
+    </tr>
+    <tr>
+      <th>216518</th>
+      <td>This Killing Business</td>
+      <td>2013</td>
+    </tr>
+    <tr>
+      <th>216519</th>
+      <td>Berlina - Eine Reise ins Ungewisse</td>
+      <td>1991</td>
+    </tr>
+    <tr>
+      <th>216520</th>
+      <td>Die Herrgottsgrenadiere</td>
+      <td>1932</td>
+    </tr>
+    <tr>
+      <th>216521</th>
+      <td>Meglio baciare un cobra</td>
+      <td>1986</td>
+    </tr>
+    <tr>
+      <th>216522</th>
+      <td>Kvaska</td>
+      <td>2007</td>
+    </tr>
+    <tr>
+      <th>216523</th>
+      <td>Counterpoint</td>
+      <td>1967</td>
+    </tr>
+    <tr>
+      <th>216524</th>
+      <td>Den sidste dag</td>
+      <td>2004</td>
+    </tr>
+    <tr>
+      <th>216525</th>
+      <td>Take This Job and Shove It</td>
+      <td>1981</td>
+    </tr>
+    <tr>
+      <th>216526</th>
+      <td>Le temps de l'aventure</td>
+      <td>2013</td>
+    </tr>
+    <tr>
+      <th>216527</th>
+      <td>Cargaison clandestine</td>
+      <td>1947</td>
+    </tr>
+    <tr>
+      <th>216528</th>
+      <td>Clara no es nombre de mujer</td>
+      <td>2012</td>
+    </tr>
+    <tr>
+      <th>216529</th>
+      <td>Benzina</td>
+      <td>2001</td>
+    </tr>
+    <tr>
+      <th>216530</th>
+      <td>Kasaysayan ng lahi</td>
+      <td>1973</td>
+    </tr>
+    <tr>
+      <th>216531</th>
+      <td>Hu tu nu si ji</td>
+      <td>1982</td>
+    </tr>
+    <tr>
+      <th>216532</th>
+      <td>Nobody Waved Good-bye</td>
+      <td>1964</td>
+    </tr>
+    <tr>
+      <th>216533</th>
+      <td>E yue</td>
+      <td>2005</td>
+    </tr>
+    <tr>
+      <th>216534</th>
+      <td>Lakota Girls</td>
+      <td>2015</td>
+    </tr>
+    <tr>
+      <th>216535</th>
+      <td>Kroniki domowe</td>
+      <td>1997</td>
+    </tr>
+    <tr>
+      <th>216536</th>
+      <td>The Sting II</td>
+      <td>1983</td>
+    </tr>
+  </tbody>
+</table>
+<p>216537 rows × 2 columns</p>
+</div><p>To get the length of the df, you can simply use len()</p>
+<pre class="code python literal-block">
+<span class="nb">len</span><span class="p">(</span><span class="n">cast</span><span class="p">)</span>
+</pre>
+<pre class="literal-block">
+3383167
+</pre>
+<p>To get the columns of the pandas df, you can use df.columns</p>
+<pre class="code python literal-block">
+<span class="n">titles</span><span class="o">.</span><span class="n">columns</span>
+</pre>
+<pre class="literal-block">
+Index([u'title', u'year'], dtype='object')
+</pre>
+<p>To get only a few columns, you can pass them as a list of columns to be
+displayed</p>
+<pre class="code python literal-block">
+<span class="n">cast</span><span class="p">[</span><span class="mi">50</span><span class="p">:</span><span class="mi">55</span><span class="p">][[</span><span class="s1">'year'</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">]]</span>
+</pre>
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>year</th>
+      <th>name</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>50</th>
+      <td>1963</td>
+      <td>'Pucherete'</td>
+    </tr>
+    <tr>
+      <th>51</th>
+      <td>2002</td>
+      <td>'Raff'</td>
+    </tr>
+    <tr>
+      <th>52</th>
+      <td>2016</td>
+      <td>Seth 'Reaktion' Hillard</td>
+    </tr>
+    <tr>
+      <th>53</th>
+      <td>2012</td>
+      <td>Salas 'Sal' Silvino</td>
+    </tr>
+    <tr>
+      <th>54</th>
+      <td>2017</td>
+      <td>Andrew 'Shotgun' Smith</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+<div class="section" id="head-and-tail">
+<h2>Head and Tail</h2>
+<p>To view a small sample of a Series or DataFrame object, use the head()
+and tail() methods. The default number of elements to display is five,
+but you may pass a custom number.</p>
+<pre class="code python literal-block">
+<span class="n">titles</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</pre>
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>title</th>
+      <th>year</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>The Rising Son</td>
+      <td>1990</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Ashes of Kukulcan</td>
+      <td>2016</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>The Thousand Plane Raid</td>
+      <td>1969</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Crucea de piatra</td>
+      <td>1993</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Country</td>
+      <td>2000</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Gaiking II</td>
+      <td>2011</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>The Fresh Air Will Do You Good</td>
+      <td>2008</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Alex in Wonderland</td>
+      <td>1970</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>Women's Prison</td>
+      <td>1955</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>Do Outro Lado do Mundo</td>
+      <td>2008</td>
+    </tr>
+  </tbody>
+</table>
+</div><p><tt class="docutils literal">.head()</tt> and <tt class="docutils literal">.tail()</tt> are real genuine operations. They are not
+just to show the first 5 rows. It really builds a new dataframe. These
+are real data slicing powerhouses. We can save this to a new variable
+and ask for it later (or even get its head or tail)</p>
+<pre class="code python literal-block">
+<span class="n">titles</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre>
+<pre class="literal-block">
+Hamlet                  19
+Macbeth                 15
+Carmen                  14
+The Three Musketeers    12
+Maya                    11
+dtype: int64
+</pre>
+<pre class="code python literal-block">
+<span class="c1"># Lets get all the movies by the name &quot;The Godfather&quot;</span>
+<span class="n">titles</span><span class="p">[</span><span class="n">titles</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">&quot;The Matrix&quot;</span><span class="p">)]</span>
+</pre>
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>title</th>
+      <th>year</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>56705</th>
+      <td>The Matrix</td>
+      <td>1999</td>
+    </tr>
+    <tr>
+      <th>102314</th>
+      <td>The Matrix Reloaded</td>
+      <td>2003</td>
+    </tr>
+    <tr>
+      <th>136171</th>
+      <td>The Matrix Revolutions</td>
+      <td>2003</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+<div class="section" id="sorting">
+<h2>Sorting</h2>
+<p>You can sort the data frame by a particular column</p>
+<pre class="code python literal-block">
+<span class="n">titles</span><span class="p">[</span><span class="n">titles</span><span class="o">.</span><span class="n">title</span> <span class="o">==</span> <span class="s2">&quot;Love&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s1">'year'</span><span class="p">)</span>
+</pre>
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>title</th>
+      <th>year</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>185175</th>
+      <td>Love</td>
+      <td>1920</td>
+    </tr>
+    <tr>
+      <th>205806</th>
+      <td>Love</td>
+      <td>1927</td>
+    </tr>
+    <tr>
+      <th>190711</th>
+      <td>Love</td>
+      <td>1982</td>
+    </tr>
+    <tr>
+      <th>187302</th>
+      <td>Love</td>
+      <td>1991</td>
+    </tr>
+    <tr>
+      <th>31164</th>
+      <td>Love</td>
+      <td>1994</td>
+    </tr>
+    <tr>
+      <th>36120</th>
+      <td>Love</td>
+      <td>1999</td>
+    </tr>
+    <tr>
+      <th>102064</th>
+      <td>Love</td>
+      <td>2003</td>
+    </tr>
+    <tr>
+      <th>29504</th>
+      <td>Love</td>
+      <td>2005</td>
+    </tr>
+    <tr>
+      <th>120835</th>
+      <td>Love</td>
+      <td>2008</td>
+    </tr>
+    <tr>
+      <th>36735</th>
+      <td>Love</td>
+      <td>2011</td>
+    </tr>
+  </tbody>
+</table>
+</div><p>Sorting a series is not called .sort(). It is called .order() &gt; Pandas
+will get rid of this asymmetry in future</p>
+<pre class="code python literal-block">
+<span class="n">titles</span><span class="o">.</span><span class="n">year</span><span class="o">.</span><span class="n">order</span><span class="p">()</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre>
+<pre class="literal-block">
+165551    1894
+116176    1899
+19203     1900
+88609     1900
+12641     1900
+Name: year, dtype: int64
+</pre>
+</div>
+<div class="section" id="null-nan">
+<h2>Null/ NaN</h2>
+<p><tt class="docutils literal">.isnull()</tt> will tell you if the series is null</p>
+<p><tt class="docutils literal">.notnull()</tt> will tell you if the series is not null</p>
+<pre class="code python literal-block">
+<span class="n">cast</span><span class="p">[</span><span class="n">cast</span><span class="o">.</span><span class="n">n</span><span class="o">.</span><span class="n">isnull</span><span class="p">()]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre>
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>title</th>
+      <th>year</th>
+      <th>name</th>
+      <th>type</th>
+      <th>character</th>
+      <th>n</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1</th>
+      <td>Gangsta Rap: The Glockumentary</td>
+      <td>2007</td>
+      <td>Too $hort</td>
+      <td>actor</td>
+      <td>Himself</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Stop Pepper Palmer</td>
+      <td>2014</td>
+      <td>Too $hort</td>
+      <td>actor</td>
+      <td>Himself</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Townbiz</td>
+      <td>2010</td>
+      <td>Too $hort</td>
+      <td>actor</td>
+      <td>Himself</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>For Thy Love 2</td>
+      <td>2009</td>
+      <td>Bee Moe $lim</td>
+      <td>actor</td>
+      <td>Thug 1</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Desire (III)</td>
+      <td>2014</td>
+      <td>Syaiful 'Ariffin</td>
+      <td>actor</td>
+      <td>Actor Playing Eteocles from 'Antigone'</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+</div><pre class="code python literal-block">
+<span class="n">cast</span><span class="p">[</span><span class="n">cast</span><span class="o">.</span><span class="n">n</span><span class="o">.</span><span class="n">notnull</span><span class="p">()]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre>
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>title</th>
+      <th>year</th>
+      <th>name</th>
+      <th>type</th>
+      <th>character</th>
+      <th>n</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Suuri illusioni</td>
+      <td>1985</td>
+      <td>Homo $</td>
+      <td>actor</td>
+      <td>Guests</td>
+      <td>22</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Menace II Society</td>
+      <td>1993</td>
+      <td>Too $hort</td>
+      <td>actor</td>
+      <td>Lew-Loc</td>
+      <td>27</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Porndogs: The Adventures of Sadie</td>
+      <td>2009</td>
+      <td>Too $hort</td>
+      <td>actor</td>
+      <td>Bosco</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>When the Man Went South</td>
+      <td>2014</td>
+      <td>Taipaleti 'Atu'ake</td>
+      <td>actor</td>
+      <td>Two Palms - Ua'i Paame</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>Little Angel (Angelita)</td>
+      <td>2015</td>
+      <td>Michael 'babeepower' Viera</td>
+      <td>actor</td>
+      <td>Chico</td>
+      <td>9</td>
+    </tr>
+  </tbody>
+</table>
+</div><p>---- EX2</p>
+</div>
+<div class="section" id="graph-of-movies-created-every-year">
+<h2>Graph of movies created every year</h2>
+<pre class="code python literal-block">
+<span class="n">titles</span><span class="o">.</span><span class="n">year</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre>
+<pre class="literal-block">
+&lt;matplotlib.axes._subplots.AxesSubplot at 0x13ac91d90&gt;
+</pre>
+<img alt="" src="output_32_1.png" />
+<p>So what went wrong? * It decided to transpose the axes * The years
+went from right to left * <strong>Its not year sorted. It is count (freq)
+sorted!</strong></p>
+<p>The correct way:</p>
+<p><tt class="docutils literal"><span class="pre">titles.year.value_counts().sort_index().plot()</span></tt></p>
+<pre class="code python literal-block">
+<span class="n">titles</span><span class="o">.</span><span class="n">year</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre>
+<pre class="literal-block">
+&lt;matplotlib.axes._subplots.AxesSubplot at 0x15f0c6650&gt;
+</pre>
+<img alt="" src="output_34_1.png" />
+</div>
+<div class="section" id="lets-plot-the-scatter-plot-of-leonardo-dicaprio-s-career">
+<h2>Lets plot the scatter plot of Leonardo DiCaprio's career</h2>
+<pre class="code python literal-block">
+<span class="n">cast</span><span class="p">[</span><span class="n">cast</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;Leonardo DiCaprio&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">'year'</span><span class="p">,</span>
+                                            <span class="n">y</span><span class="o">=</span><span class="s1">'n'</span><span class="p">,</span>
+                                            <span class="n">kind</span><span class="o">=</span><span class="s1">'scatter'</span><span class="p">,</span>
+                                           <span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">])</span>
+</pre>
+<pre class="literal-block">
+&lt;matplotlib.axes._subplots.AxesSubplot at 0x15da44d10&gt;
+</pre>
+<img alt="" src="output_36_1.png" />
+<p>--- EX3</p>
+</div>
+<div class="section" id="indexing">
+<h2>Indexing</h2>
+<p>It is useful to sort and organize the data.</p>
+<p>Indexes can take a little while to build.</p>
+<pre class="code python literal-block">
+<span class="o">%%</span><span class="n">time</span>
+<span class="n">cast</span><span class="p">[</span><span class="n">cast</span><span class="o">.</span><span class="n">title</span> <span class="o">==</span> <span class="s2">&quot;Hamlet&quot;</span><span class="p">]</span>
+</pre>
+<pre class="literal-block">
+CPU times: user 506 ms, sys: 8.27 ms, total: 515 ms
+Wall time: 515 ms
+</pre>
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>title</th>
+      <th>year</th>
+      <th>name</th>
+      <th>type</th>
+      <th>character</th>
+      <th>n</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1464</th>
+      <td>Hamlet</td>
+      <td>1996</td>
+      <td>Riz Abbasi</td>
+      <td>actor</td>
+      <td>Attendant to Claudius</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>6842</th>
+      <td>Hamlet</td>
+      <td>1921</td>
+      <td>Fritz Achterberg</td>
+      <td>actor</td>
+      <td>Fortinbras,</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <th>10446</th>
+      <td>Hamlet</td>
+      <td>2009</td>
+      <td>Hayden Adams</td>
+      <td>actor</td>
+      <td>Laertes</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>10447</th>
+      <td>Hamlet</td>
+      <td>2009</td>
+      <td>Hayden Adams</td>
+      <td>actor</td>
+      <td>Player</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>12956</th>
+      <td>Hamlet</td>
+      <td>1913</td>
+      <td>Eric Adeney</td>
+      <td>actor</td>
+      <td>Reynaldo</td>
+      <td>14</td>
+    </tr>
+    <tr>
+      <th>15003</th>
+      <td>Hamlet</td>
+      <td>2000</td>
+      <td>Casey Affleck</td>
+      <td>actor</td>
+      <td>Fortinbras</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <th>30560</th>
+      <td>Hamlet</td>
+      <td>1964</td>
+      <td>Hugh Alexander</td>
+      <td>actor</td>
+      <td>Cornelius</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>30561</th>
+      <td>Hamlet</td>
+      <td>1964</td>
+      <td>Hugh Alexander</td>
+      <td>actor</td>
+      <td>Second Gravedigger</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>30562</th>
+      <td>Hamlet</td>
+      <td>1964</td>
+      <td>Hugh Alexander</td>
+      <td>actor</td>
+      <td>English Ambassador</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>48573</th>
+      <td>Hamlet</td>
+      <td>1913</td>
+      <td>Richard Andean</td>
+      <td>actor</td>
+      <td>Second Player</td>
+      <td>16</td>
+    </tr>
+    <tr>
+      <th>57786</th>
+      <td>Hamlet</td>
+      <td>1990</td>
+      <td>Christien Anholt</td>
+      <td>actor</td>
+      <td>Marcellus</td>
+      <td>14</td>
+    </tr>
+    <tr>
+      <th>69531</th>
+      <td>Hamlet</td>
+      <td>1969</td>
+      <td>Ben Aris</td>
+      <td>actor</td>
+      <td>Rosencrantz</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <th>74259</th>
+      <td>Hamlet</td>
+      <td>2015</td>
+      <td>Thomas (II) Arnold</td>
+      <td>actor</td>
+      <td>Horatio</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>85506</th>
+      <td>Hamlet</td>
+      <td>1996</td>
+      <td>Richard Attenborough</td>
+      <td>actor</td>
+      <td>English Ambassador</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>93113</th>
+      <td>Hamlet</td>
+      <td>1948</td>
+      <td>Felix Aylmer</td>
+      <td>actor</td>
+      <td>Polonius - Lord Chamberlain</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <th>123570</th>
+      <td>Hamlet</td>
+      <td>1913</td>
+      <td>J.H. Barnes</td>
+      <td>actor</td>
+      <td>Polonius</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>130284</th>
+      <td>Hamlet</td>
+      <td>2000</td>
+      <td>Paul Bartel</td>
+      <td>actor</td>
+      <td>Osric</td>
+      <td>14</td>
+    </tr>
+    <tr>
+      <th>135743</th>
+      <td>Hamlet</td>
+      <td>1990</td>
+      <td>Alan Bates</td>
+      <td>actor</td>
+      <td>Claudius</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>141835</th>
+      <td>Hamlet</td>
+      <td>1996</td>
+      <td>Simon Russell Beale</td>
+      <td>actor</td>
+      <td>Second Gravedigger</td>
+      <td>37</td>
+    </tr>
+    <tr>
+      <th>142639</th>
+      <td>Hamlet</td>
+      <td>1973</td>
+      <td>James Bearden</td>
+      <td>actor</td>
+      <td>Fortinbras</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>163212</th>
+      <td>Hamlet</td>
+      <td>1913</td>
+      <td>Grendon Bentley</td>
+      <td>actor</td>
+      <td>Fortinbras</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>192332</th>
+      <td>Hamlet</td>
+      <td>1996</td>
+      <td>David (V) Blair</td>
+      <td>actor</td>
+      <td>Attendant to Claudius</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>196947</th>
+      <td>Hamlet</td>
+      <td>1996</td>
+      <td>Brian Blessed</td>
+      <td>actor</td>
+      <td>Ghost of Hamlet's Father</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>225390</th>
+      <td>Hamlet</td>
+      <td>1996</td>
+      <td>Christopher Bowles</td>
+      <td>actor</td>
+      <td>Cadet in Play</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>233904</th>
+      <td>Hamlet</td>
+      <td>1996</td>
+      <td>Kenneth Branagh</td>
+      <td>actor</td>
+      <td>Hamlet</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>245423</th>
+      <td>Hamlet</td>
+      <td>1996</td>
+      <td>Richard Briers</td>
+      <td>actor</td>
+      <td>Polonius</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>265482</th>
+      <td>Hamlet</td>
+      <td>1996</td>
+      <td>Michael Bryant</td>
+      <td>actor</td>
+      <td>Priest</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>282085</th>
+      <td>Hamlet</td>
+      <td>1964</td>
+      <td>Richard Burton</td>
+      <td>actor</td>
+      <td>Hamlet</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>283550</th>
+      <td>Hamlet</td>
+      <td>1973</td>
+      <td>Stephen Bush</td>
+      <td>actor</td>
+      <td>Polonius</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>283628</th>
+      <td>Hamlet</td>
+      <td>1948</td>
+      <td>Anthony Bushell</td>
+      <td>actor</td>
+      <td>Bit Part</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>2941615</th>
+      <td>Hamlet</td>
+      <td>2015</td>
+      <td>Jodie McNee</td>
+      <td>actress</td>
+      <td>Rosencrantz</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>2941616</th>
+      <td>Hamlet</td>
+      <td>2015</td>
+      <td>Jodie McNee</td>
+      <td>actress</td>
+      <td>2nd Gravedigger</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>2944366</th>
+      <td>Hamlet</td>
+      <td>2009</td>
+      <td>Jennifer Mefford</td>
+      <td>actress</td>
+      <td>Player Queen</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <th>2944367</th>
+      <td>Hamlet</td>
+      <td>2009</td>
+      <td>Jennifer Mefford</td>
+      <td>actress</td>
+      <td>Messenger</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <th>2962828</th>
+      <td>Hamlet</td>
+      <td>1976</td>
+      <td>Helen Mirren</td>
+      <td>actress</td>
+      <td>Ophelia</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>2962829</th>
+      <td>Hamlet</td>
+      <td>1976</td>
+      <td>Helen Mirren</td>
+      <td>actress</td>
+      <td>Gertrude</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>3008651</th>
+      <td>Hamlet</td>
+      <td>1921</td>
+      <td>Asta Nielsen</td>
+      <td>actress</td>
+      <td>Hamlet</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>3011278</th>
+      <td>Hamlet</td>
+      <td>2000</td>
+      <td>Anne (II) Nixon</td>
+      <td>actress</td>
+      <td>Special Guest Appearance</td>
+      <td>34</td>
+    </tr>
+    <tr>
+      <th>3043399</th>
+      <td>Hamlet</td>
+      <td>1969</td>
+      <td>Judy Parfitt</td>
+      <td>actress</td>
+      <td>Gertrude</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>3052861</th>
+      <td>Hamlet</td>
+      <td>2015</td>
+      <td>Maxine Peake</td>
+      <td>actress</td>
+      <td>Hamlet</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>3065186</th>
+      <td>Hamlet</td>
+      <td>1990</td>
+      <td>Sarah Phillips</td>
+      <td>actress</td>
+      <td>The Players</td>
+      <td>19</td>
+    </tr>
+    <tr>
+      <th>3091906</th>
+      <td>Hamlet</td>
+      <td>1996</td>
+      <td>Sian Radinger</td>
+      <td>actress</td>
+      <td>Prologue</td>
+      <td>35</td>
+    </tr>
+    <tr>
+      <th>3096274</th>
+      <td>Hamlet</td>
+      <td>1996</td>
+      <td>Melanie Ramsay</td>
+      <td>actress</td>
+      <td>Prostitute</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3103338</th>
+      <td>Hamlet</td>
+      <td>2000</td>
+      <td>India Reed Kotis</td>
+      <td>actress</td>
+      <td>Special Guest Appearance</td>
+      <td>29</td>
+    </tr>
+    <tr>
+      <th>3109452</th>
+      <td>Hamlet</td>
+      <td>1987</td>
+      <td>Melanie Revell</td>
+      <td>actress</td>
+      <td>Gertrude</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3114451</th>
+      <td>Hamlet</td>
+      <td>1913</td>
+      <td>Olive Richardson</td>
+      <td>actress</td>
+      <td>Player Queen</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3157462</th>
+      <td>Hamlet</td>
+      <td>1911</td>
+      <td>Emilie Sannom</td>
+      <td>actress</td>
+      <td>Ophelia</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>3175073</th>
+      <td>Hamlet</td>
+      <td>2000</td>
+      <td>Kelly Sebastian</td>
+      <td>actress</td>
+      <td>Secretary</td>
+      <td>39</td>
+    </tr>
+    <tr>
+      <th>3198981</th>
+      <td>Hamlet</td>
+      <td>1948</td>
+      <td>Jean Simmons</td>
+      <td>actress</td>
+      <td>Ophelia - and Daughter</td>
+      <td>17</td>
+    </tr>
+    <tr>
+      <th>3200795</th>
+      <td>Hamlet</td>
+      <td>1990</td>
+      <td>Baby Simon Sinclair</td>
+      <td>actress</td>
+      <td>The Players</td>
+      <td>26</td>
+    </tr>
+    <tr>
+      <th>3200920</th>
+      <td>Hamlet</td>
+      <td>1990</td>
+      <td>Pamela Sinclair</td>
+      <td>actress</td>
+      <td>The Players</td>
+      <td>25</td>
+    </tr>
+    <tr>
+      <th>3202057</th>
+      <td>Hamlet</td>
+      <td>1954</td>
+      <td>Mala Sinha</td>
+      <td>actress</td>
+      <td>Ophelia</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>3233062</th>
+      <td>Hamlet</td>
+      <td>2000</td>
+      <td>Julia Stiles</td>
+      <td>actress</td>
+      <td>Ophelia</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>3241676</th>
+      <td>Hamlet</td>
+      <td>2009</td>
+      <td>Bernadette Sullivan</td>
+      <td>actress</td>
+      <td>Gertrude</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>3260132</th>
+      <td>Hamlet</td>
+      <td>1964</td>
+      <td>Carol Teitel</td>
+      <td>actress</td>
+      <td>Lady</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3284654</th>
+      <td>Hamlet</td>
+      <td>1969</td>
+      <td>Jennifer Tudor</td>
+      <td>actress</td>
+      <td>Court lady</td>
+      <td>23</td>
+    </tr>
+    <tr>
+      <th>3305710</th>
+      <td>Hamlet</td>
+      <td>2000</td>
+      <td>Diane Venora</td>
+      <td>actress</td>
+      <td>Gertrude</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>3333380</th>
+      <td>Hamlet</td>
+      <td>1996</td>
+      <td>Perdita Weeks</td>
+      <td>actress</td>
+      <td>Second Player</td>
+      <td>44</td>
+    </tr>
+    <tr>
+      <th>3337634</th>
+      <td>Hamlet</td>
+      <td>2015</td>
+      <td>Katie (II) West</td>
+      <td>actress</td>
+      <td>Ophelia</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>3353138</th>
+      <td>Hamlet</td>
+      <td>1996</td>
+      <td>Kate Winslet</td>
+      <td>actress</td>
+      <td>Ophelia</td>
+      <td>46</td>
+    </tr>
+  </tbody>
+</table>
+<p>314 rows × 6 columns</p>
+</div><p>This is taking just a little more than 0.5 seconds to do all
+comparisons.</p>
+<p>Lets use ** <tt class="docutils literal">.set_index()</tt> ** which is an operation that allows
+you to clobber and replace line number of the file that you read data in
+from.</p>
+<pre class="code python literal-block">
+<span class="o">%%</span><span class="n">time</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">cast</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s1">'title'</span><span class="p">])</span>
+</pre>
+<pre class="literal-block">
+CPU times: user 192 ms, sys: 76 ms, total: 268 ms
+Wall time: 301 ms
+</pre>
+<pre class="code python literal-block">
+<span class="n">c</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre>
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>year</th>
+      <th>name</th>
+      <th>type</th>
+      <th>character</th>
+      <th>n</th>
+    </tr>
+    <tr>
+      <th>title</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Suuri illusioni</th>
+      <td>1985</td>
+      <td>Homo $</td>
+      <td>actor</td>
+      <td>Guests</td>
+      <td>22</td>
+    </tr>
+    <tr>
+      <th>Gangsta Rap: The Glockumentary</th>
+      <td>2007</td>
+      <td>Too $hort</td>
+      <td>actor</td>
+      <td>Himself</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>Menace II Society</th>
+      <td>1993</td>
+      <td>Too $hort</td>
+      <td>actor</td>
+      <td>Lew-Loc</td>
+      <td>27</td>
+    </tr>
+    <tr>
+      <th>Porndogs: The Adventures of Sadie</th>
+      <td>2009</td>
+      <td>Too $hort</td>
+      <td>actor</td>
+      <td>Bosco</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>Stop Pepper Palmer</th>
+      <td>2014</td>
+      <td>Too $hort</td>
+      <td>actor</td>
+      <td>Himself</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+</div><p>It moved entire <tt class="docutils literal">title</tt> column to Index column.</p>
+<div class="section" id="loc">
+<h3>loc</h3>
+<p>means look at a particular location using a square bracket lookup</p>
+<pre class="code python literal-block">
+<span class="o">%%</span><span class="n">time</span>
+<span class="n">c</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Hamlet'</span><span class="p">]</span>
+</pre>
+<pre class="literal-block">
+CPU times: user 377 ms, sys: 6.15 ms, total: 383 ms
+Wall time: 384 ms
+</pre>
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>year</th>
+      <th>name</th>
+      <th>type</th>
+      <th>character</th>
+      <th>n</th>
+    </tr>
+    <tr>
+      <th>title</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Hamlet</th>
+      <td>1996</td>
+      <td>Riz Abbasi</td>
+      <td>actor</td>
+      <td>Attendant to Claudius</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1921</td>
+      <td>Fritz Achterberg</td>
+      <td>actor</td>
+      <td>Fortinbras,</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2009</td>
+      <td>Hayden Adams</td>
+      <td>actor</td>
+      <td>Laertes</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2009</td>
+      <td>Hayden Adams</td>
+      <td>actor</td>
+      <td>Player</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1913</td>
+      <td>Eric Adeney</td>
+      <td>actor</td>
+      <td>Reynaldo</td>
+      <td>14</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2000</td>
+      <td>Casey Affleck</td>
+      <td>actor</td>
+      <td>Fortinbras</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1964</td>
+      <td>Hugh Alexander</td>
+      <td>actor</td>
+      <td>Cornelius</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1964</td>
+      <td>Hugh Alexander</td>
+      <td>actor</td>
+      <td>Second Gravedigger</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1964</td>
+      <td>Hugh Alexander</td>
+      <td>actor</td>
+      <td>English Ambassador</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1913</td>
+      <td>Richard Andean</td>
+      <td>actor</td>
+      <td>Second Player</td>
+      <td>16</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1990</td>
+      <td>Christien Anholt</td>
+      <td>actor</td>
+      <td>Marcellus</td>
+      <td>14</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1969</td>
+      <td>Ben Aris</td>
+      <td>actor</td>
+      <td>Rosencrantz</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2015</td>
+      <td>Thomas (II) Arnold</td>
+      <td>actor</td>
+      <td>Horatio</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1996</td>
+      <td>Richard Attenborough</td>
+      <td>actor</td>
+      <td>English Ambassador</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1948</td>
+      <td>Felix Aylmer</td>
+      <td>actor</td>
+      <td>Polonius - Lord Chamberlain</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1913</td>
+      <td>J.H. Barnes</td>
+      <td>actor</td>
+      <td>Polonius</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2000</td>
+      <td>Paul Bartel</td>
+      <td>actor</td>
+      <td>Osric</td>
+      <td>14</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1990</td>
+      <td>Alan Bates</td>
+      <td>actor</td>
+      <td>Claudius</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1996</td>
+      <td>Simon Russell Beale</td>
+      <td>actor</td>
+      <td>Second Gravedigger</td>
+      <td>37</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1973</td>
+      <td>James Bearden</td>
+      <td>actor</td>
+      <td>Fortinbras</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1913</td>
+      <td>Grendon Bentley</td>
+      <td>actor</td>
+      <td>Fortinbras</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1996</td>
+      <td>David (V) Blair</td>
+      <td>actor</td>
+      <td>Attendant to Claudius</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1996</td>
+      <td>Brian Blessed</td>
+      <td>actor</td>
+      <td>Ghost of Hamlet's Father</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1996</td>
+      <td>Christopher Bowles</td>
+      <td>actor</td>
+      <td>Cadet in Play</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1996</td>
+      <td>Kenneth Branagh</td>
+      <td>actor</td>
+      <td>Hamlet</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1996</td>
+      <td>Richard Briers</td>
+      <td>actor</td>
+      <td>Polonius</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1996</td>
+      <td>Michael Bryant</td>
+      <td>actor</td>
+      <td>Priest</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1964</td>
+      <td>Richard Burton</td>
+      <td>actor</td>
+      <td>Hamlet</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1973</td>
+      <td>Stephen Bush</td>
+      <td>actor</td>
+      <td>Polonius</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1948</td>
+      <td>Anthony Bushell</td>
+      <td>actor</td>
+      <td>Bit Part</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2015</td>
+      <td>Jodie McNee</td>
+      <td>actress</td>
+      <td>Rosencrantz</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2015</td>
+      <td>Jodie McNee</td>
+      <td>actress</td>
+      <td>2nd Gravedigger</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2009</td>
+      <td>Jennifer Mefford</td>
+      <td>actress</td>
+      <td>Player Queen</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2009</td>
+      <td>Jennifer Mefford</td>
+      <td>actress</td>
+      <td>Messenger</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1976</td>
+      <td>Helen Mirren</td>
+      <td>actress</td>
+      <td>Ophelia</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1976</td>
+      <td>Helen Mirren</td>
+      <td>actress</td>
+      <td>Gertrude</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1921</td>
+      <td>Asta Nielsen</td>
+      <td>actress</td>
+      <td>Hamlet</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2000</td>
+      <td>Anne (II) Nixon</td>
+      <td>actress</td>
+      <td>Special Guest Appearance</td>
+      <td>34</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1969</td>
+      <td>Judy Parfitt</td>
+      <td>actress</td>
+      <td>Gertrude</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2015</td>
+      <td>Maxine Peake</td>
+      <td>actress</td>
+      <td>Hamlet</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1990</td>
+      <td>Sarah Phillips</td>
+      <td>actress</td>
+      <td>The Players</td>
+      <td>19</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1996</td>
+      <td>Sian Radinger</td>
+      <td>actress</td>
+      <td>Prologue</td>
+      <td>35</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1996</td>
+      <td>Melanie Ramsay</td>
+      <td>actress</td>
+      <td>Prostitute</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2000</td>
+      <td>India Reed Kotis</td>
+      <td>actress</td>
+      <td>Special Guest Appearance</td>
+      <td>29</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1987</td>
+      <td>Melanie Revell</td>
+      <td>actress</td>
+      <td>Gertrude</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1913</td>
+      <td>Olive Richardson</td>
+      <td>actress</td>
+      <td>Player Queen</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1911</td>
+      <td>Emilie Sannom</td>
+      <td>actress</td>
+      <td>Ophelia</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2000</td>
+      <td>Kelly Sebastian</td>
+      <td>actress</td>
+      <td>Secretary</td>
+      <td>39</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1948</td>
+      <td>Jean Simmons</td>
+      <td>actress</td>
+      <td>Ophelia - and Daughter</td>
+      <td>17</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1990</td>
+      <td>Baby Simon Sinclair</td>
+      <td>actress</td>
+      <td>The Players</td>
+      <td>26</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1990</td>
+      <td>Pamela Sinclair</td>
+      <td>actress</td>
+      <td>The Players</td>
+      <td>25</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1954</td>
+      <td>Mala Sinha</td>
+      <td>actress</td>
+      <td>Ophelia</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2000</td>
+      <td>Julia Stiles</td>
+      <td>actress</td>
+      <td>Ophelia</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2009</td>
+      <td>Bernadette Sullivan</td>
+      <td>actress</td>
+      <td>Gertrude</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1964</td>
+      <td>Carol Teitel</td>
+      <td>actress</td>
+      <td>Lady</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1969</td>
+      <td>Jennifer Tudor</td>
+      <td>actress</td>
+      <td>Court lady</td>
+      <td>23</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2000</td>
+      <td>Diane Venora</td>
+      <td>actress</td>
+      <td>Gertrude</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1996</td>
+      <td>Perdita Weeks</td>
+      <td>actress</td>
+      <td>Second Player</td>
+      <td>44</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2015</td>
+      <td>Katie (II) West</td>
+      <td>actress</td>
+      <td>Ophelia</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1996</td>
+      <td>Kate Winslet</td>
+      <td>actress</td>
+      <td>Ophelia</td>
+      <td>46</td>
+    </tr>
+  </tbody>
+</table>
+<p>314 rows × 5 columns</p>
+</div><p>This sped up the look up by <tt class="docutils literal"><span class="pre">~90-100</span> ms</tt>. But this is still not fast
+enough. It turns out that such indexing using <tt class="docutils literal">loc</tt> really helps
+pandas out only if it ordered. Because it is then, that it uses a divide
+and conquer approach!</p>
+<p>So now lets sort index and check it. &gt; This is a very very memory
+expensive operation. But it is worth investing it now so that the
+analysis (using lookups) are much much faster</p>
+<pre class="code python literal-block">
+<span class="o">%%</span><span class="n">time</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">cast</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s1">'title'</span><span class="p">])</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
+</pre>
+<pre class="literal-block">
+CPU times: user 14.1 s, sys: 93.8 ms, total: 14.2 s
+Wall time: 14.2 s
+</pre>
+<pre class="code python literal-block">
+<span class="o">%%</span><span class="n">time</span>
+<span class="c1"># Now lets see how much time it takes to lookup Hamlet.</span>
+<span class="c1"># Run this cell twice because the system will do some paging to</span>
+<span class="c1"># resuse the ram that we used in previous sorting</span>
+<span class="n">c</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Hamlet'</span><span class="p">]</span>
+</pre>
+<pre class="literal-block">
+CPU times: user 359 µs, sys: 65 µs, total: 424 µs
+Wall time: 374 µs
+</pre>
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>year</th>
+      <th>name</th>
+      <th>type</th>
+      <th>character</th>
+      <th>n</th>
+    </tr>
+    <tr>
+      <th>title</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Hamlet</th>
+      <td>1913</td>
+      <td>R. Montague</td>
+      <td>actor</td>
+      <td>Priest</td>
+      <td>19</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1948</td>
+      <td>Christopher Lee</td>
+      <td>actor</td>
+      <td>Spear Carrier</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1964</td>
+      <td>Linda Marsh</td>
+      <td>actress</td>
+      <td>Ophelia</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1964</td>
+      <td>Gerome Ragni</td>
+      <td>actor</td>
+      <td>Attendant</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1996</td>
+      <td>Perdita Weeks</td>
+      <td>actress</td>
+      <td>Second Player</td>
+      <td>44</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2015</td>
+      <td>Claire Benedict</td>
+      <td>actress</td>
+      <td>Player King</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1964</td>
+      <td>Michael Ebert</td>
+      <td>actor</td>
+      <td>Fortinbras</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1948</td>
+      <td>Patrick Troughton</td>
+      <td>actor</td>
+      <td>Player King</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1973</td>
+      <td>Michael Rudder</td>
+      <td>actor</td>
+      <td>Rosencrantz</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1996</td>
+      <td>Ray Fearon</td>
+      <td>actor</td>
+      <td>Francisco</td>
+      <td>19</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2015</td>
+      <td>Ashley Zhangazha</td>
+      <td>actor</td>
+      <td>Laertes</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2000</td>
+      <td>Paul Ferriter</td>
+      <td>actor</td>
+      <td>Special Guest Appearance</td>
+      <td>23</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1973</td>
+      <td>Linda Certain</td>
+      <td>actress</td>
+      <td>Ophelia</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1990</td>
+      <td>Dave Duffy</td>
+      <td>actor</td>
+      <td>Francisco</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1990</td>
+      <td>Vernon Dobtcheff</td>
+      <td>actor</td>
+      <td>Reynaldo</td>
+      <td>16</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1996</td>
+      <td>Richard Briers</td>
+      <td>actor</td>
+      <td>Polonius</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1964</td>
+      <td>Philip Coolidge</td>
+      <td>actor</td>
+      <td>Voltimand</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1911</td>
+      <td>Einar Zangenberg</td>
+      <td>actor</td>
+      <td>Laertes</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1948</td>
+      <td>Eileen Herlie</td>
+      <td>actress</td>
+      <td>Gertrude - The Queen</td>
+      <td>12</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2015</td>
+      <td>John Shrapnel</td>
+      <td>actor</td>
+      <td>Claudius</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1990</td>
+      <td>John McEnery</td>
+      <td>actor</td>
+      <td>Osric</td>
+      <td>12</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1987</td>
+      <td>Melanie Revell</td>
+      <td>actress</td>
+      <td>Gertrude</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1948</td>
+      <td>Desmond Llewelyn</td>
+      <td>actor</td>
+      <td>Extra</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2015</td>
+      <td>John Shrapnel</td>
+      <td>actor</td>
+      <td>Ghost</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1921</td>
+      <td>Hans Junkermann</td>
+      <td>actor</td>
+      <td>Polonius</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1948</td>
+      <td>Felix Aylmer</td>
+      <td>actor</td>
+      <td>Polonius - Lord Chamberlain</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2000</td>
+      <td>Thomas Roma</td>
+      <td>actor</td>
+      <td>Special Guest Appearance</td>
+      <td>38</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2000</td>
+      <td>Ayun Halliday</td>
+      <td>actor</td>
+      <td>Special Guest Appearance</td>
+      <td>30</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1964</td>
+      <td>William Redfield</td>
+      <td>actor</td>
+      <td>Guildenstern</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1969</td>
+      <td>David (IV) Griffith</td>
+      <td>actor</td>
+      <td>Messenger</td>
+      <td>17</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1990</td>
+      <td>Helena Bonham Carter</td>
+      <td>actress</td>
+      <td>Ophelia</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1976</td>
+      <td>Helen Mirren</td>
+      <td>actress</td>
+      <td>Gertrude</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2015</td>
+      <td>Gillian Bevan</td>
+      <td>actress</td>
+      <td>Polonia</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1996</td>
+      <td>Timothy Spall</td>
+      <td>actor</td>
+      <td>Rosencrantz</td>
+      <td>40</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2015</td>
+      <td>Michelle Butterly</td>
+      <td>actress</td>
+      <td>1st Gravedigger</td>
+      <td>11</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1990</td>
+      <td>Roy York</td>
+      <td>actor</td>
+      <td>The Players</td>
+      <td>21</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1996</td>
+      <td>John Spencer-Churchill</td>
+      <td>actor</td>
+      <td>Fortinbras's Captain</td>
+      <td>32</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1996</td>
+      <td>Rosemary Harris</td>
+      <td>actress</td>
+      <td>Player Queen</td>
+      <td>22</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1969</td>
+      <td>Roger Lloyd Pack</td>
+      <td>actor</td>
+      <td>Reynaldo</td>
+      <td>20</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1973</td>
+      <td>Dan Hennessey</td>
+      <td>actor</td>
+      <td>Claudius, King of Denmark</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2011</td>
+      <td>Peter Wingfield</td>
+      <td>actor</td>
+      <td>Claudius</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2015</td>
+      <td>Peter Singh</td>
+      <td>actor</td>
+      <td>Guildenstern</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2000</td>
+      <td>Rome Neal</td>
+      <td>actor</td>
+      <td>Barnardo</td>
+      <td>12</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1990</td>
+      <td>Sarah Phillips</td>
+      <td>actress</td>
+      <td>The Players</td>
+      <td>19</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1913</td>
+      <td>Eric Adeney</td>
+      <td>actor</td>
+      <td>Reynaldo</td>
+      <td>14</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2000</td>
+      <td>Karl Geary</td>
+      <td>actor</td>
+      <td>Horatio</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1996</td>
+      <td>Yvonne Gidden</td>
+      <td>actress</td>
+      <td>Doctor</td>
+      <td>20</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1969</td>
+      <td>Marianne Faithfull</td>
+      <td>actress</td>
+      <td>Ophelia</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1948</td>
+      <td>Niall MacGinnis</td>
+      <td>actor</td>
+      <td>Sea Captain</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1973</td>
+      <td>Bembo Davis</td>
+      <td>actor</td>
+      <td>Norwegian captain</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2000</td>
+      <td>Robert Thurman</td>
+      <td>actor</td>
+      <td>Priest</td>
+      <td>16</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1996</td>
+      <td>Judi Dench</td>
+      <td>actress</td>
+      <td>Hecuba</td>
+      <td>12</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1969</td>
+      <td>Peter Gale</td>
+      <td>actor</td>
+      <td>Osric</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1973</td>
+      <td>Stephen Bush</td>
+      <td>actor</td>
+      <td>Polonius</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1996</td>
+      <td>Jack Lemmon</td>
+      <td>actor</td>
+      <td>Marcellus</td>
+      <td>29</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2000</td>
+      <td>Bill Murray</td>
+      <td>actor</td>
+      <td>Polonius</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1911</td>
+      <td>Ella La Cour</td>
+      <td>actress</td>
+      <td>Gertrude</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2009</td>
+      <td>Bernadette Sullivan</td>
+      <td>actress</td>
+      <td>Gertrude</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>1969</td>
+      <td>Anthony Hopkins</td>
+      <td>actor</td>
+      <td>Claudius</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>Hamlet</th>
+      <td>2009</td>
+      <td>David Nathan Schwartz</td>
+      <td>actor</td>
+      <td>Polonius</td>
+      <td>6</td>
+    </tr>
+  </tbody>
+</table>
+<p>314 rows × 5 columns</p>
+</div><p>It took all of <tt class="docutils literal">450us</tt>.</p>
+<p>Let's now bump title and year on the index. So we'll have multilevel
+index!</p>
+<pre class="code python literal-block">
+<span class="n">c</span> <span class="o">=</span> <span class="n">cast</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s1">'title'</span><span class="p">,</span> <span class="s1">'year'</span><span class="p">])</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
+<span class="n">c</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre>
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th></th>
+      <th>name</th>
+      <th>type</th>
+      <th>character</th>
+      <th>n</th>
+    </tr>
+    <tr>
+      <th>title</th>
+      <th>year</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th rowspan="5" valign="top">#1 Serial Killer</th>
+      <th>2013</th>
+      <td>Michael Alton</td>
+      <td>actor</td>
+      <td>Detective Roberts</td>
+      <td>17</td>
+    </tr>
+    <tr>
+      <th>2013</th>
+      <td>Aaron Aoki</td>
+      <td>actor</td>
+      <td>Plastic Bag Victim</td>
+      <td>21</td>
+    </tr>
+    <tr>
+      <th>2013</th>
+      <td>Zachary (X) Brown</td>
+      <td>actor</td>
+      <td>Africian American Teen</td>
+      <td>18</td>
+    </tr>
+    <tr>
+      <th>2013</th>
+      <td>Yvis Cannavale</td>
+      <td>actor</td>
+      <td>Homeless Man</td>
+      <td>25</td>
+    </tr>
+    <tr>
+      <th>2013</th>
+      <td>Patrick Chien</td>
+      <td>actor</td>
+      <td>Cleaver Victim</td>
+      <td>22</td>
+    </tr>
+  </tbody>
+</table>
+</div><p>So now if I look up &quot;Hamlet&quot;, I will still have the year as index left.</p>
+<pre class="code python literal-block">
+<span class="n">c</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Hamlet'</span><span class="p">]</span>
+</pre>
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>name</th>
+      <th>type</th>
+      <th>character</th>
+      <th>n</th>
+    </tr>
+    <tr>
+      <th>year</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1910</th>
+      <td>Jean Mounet-Sully</td>
+      <td>actor</td>
+      <td>Hamlet</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1911</th>
+      <td>Aage Hertel</td>
+      <td>actor</td>
+      <td>Claudius</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>1911</th>
+      <td>Oscar Langkilde</td>
+      <td>actor</td>
+      <td>Horatio</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>1911</th>
+      <td>Alwin Neu?</td>
+      <td>actor</td>
+      <td>Hamlet</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1911</th>
+      <td>Einar Zangenberg</td>
+      <td>actor</td>
+      <td>Laertes</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>1911</th>
+      <td>Ella La Cour</td>
+      <td>actress</td>
+      <td>Gertrude</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>1911</th>
+      <td>Emilie Sannom</td>
+      <td>actress</td>
+      <td>Ophelia</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>1913</th>
+      <td>Eric Adeney</td>
+      <td>actor</td>
+      <td>Reynaldo</td>
+      <td>14</td>
+    </tr>
+    <tr>
+      <th>1913</th>
+      <td>Richard Andean</td>
+      <td>actor</td>
+      <td>Second Player</td>
+      <td>16</td>
+    </tr>
+    <tr>
+      <th>1913</th>
+      <td>J.H. Barnes</td>
+      <td>actor</td>
+      <td>Polonius</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>1913</th>
+      <td>Grendon Bentley</td>
+      <td>actor</td>
+      <td>Fortinbras</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>1913</th>
+      <td>S.A. Cookson</td>
+      <td>actor</td>
+      <td>Horatio</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>1913</th>
+      <td>E. Ericson</td>
+      <td>actor</td>
+      <td>Francisco</td>
+      <td>13</td>
+    </tr>
+    <tr>
+      <th>1913</th>
+      <td>Johnston Forbes-Robertson</td>
+      <td>actor</td>
+      <td>Hamlet</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>1913</th>
+      <td>George Hayes</td>
+      <td>actor</td>
+      <td>Osric</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>1913</th>
+      <td>R. Montague</td>
+      <td>actor</td>
+      <td>Priest</td>
+      <td>19</td>
+    </tr>
+    <tr>
+      <th>1913</th>
+      <td>S.T. Pearce</td>
+      <td>actor</td>
+      <td>Second Gravedigger</td>
+      <td>18</td>
+    </tr>
+    <tr>
+      <th>1913</th>
+      <td>Percy Rhodes</td>
+      <td>actor</td>
+      <td>The Ghost</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>1913</th>
+      <td>G. (II) Richards</td>
+      <td>actor</td>
+      <td>Bernardo</td>
+      <td>12</td>
+    </tr>
+    <tr>
+      <th>1913</th>
+      <td>Walter Ringham</td>
+      <td>actor</td>
+      <td>Claudius</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1913</th>
+      <td>A. Roberts</td>
+      <td>actor</td>
+      <td>Marcellus</td>
+      <td>11</td>
+    </tr>
+    <tr>
+      <th>1913</th>
+      <td>E.A. Ross</td>
+      <td>actor</td>
+      <td>Guildenstern</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <th>1913</th>
+      <td>Montagu Rutherford</td>
+      <td>actor</td>
+      <td>Rosencrants</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <th>1913</th>
+      <td>J.H. Ryley</td>
+      <td>actor</td>
+      <td>First Gravedigger</td>
+      <td>17</td>
+    </tr>
+    <tr>
+      <th>1913</th>
+      <td>Alex Scott-Gatty</td>
+      <td>actor</td>
+      <td>Laertes</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>1913</th>
+      <td>Adeleine Bourne</td>
+      <td>actress</td>
+      <td>Gertrude</td>
+      <td>20</td>
+    </tr>
+    <tr>
+      <th>1913</th>
+      <td>Gertrude Elliot</td>
+      <td>actress</td>
+      <td>Ophelia</td>
+      <td>21</td>
+    </tr>
+    <tr>
+      <th>1913</th>
+      <td>Olive Richardson</td>
+      <td>actress</td>
+      <td>Player Queen</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1921</th>
+      <td>Fritz Achterberg</td>
+      <td>actor</td>
+      <td>Fortinbras,</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <th>1921</th>
+      <td>Paul Conradi</td>
+      <td>actor</td>
+      <td>K?nig Hamlet</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>2011</th>
+      <td>Russell Roberts</td>
+      <td>actor</td>
+      <td>King Hamlet</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2011</th>
+      <td>Martin Sims</td>
+      <td>actor</td>
+      <td>Guildenstern</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2011</th>
+      <td>Brent Stait</td>
+      <td>actor</td>
+      <td>Rosencrantz</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2011</th>
+      <td>Haig Sutherland</td>
+      <td>actor</td>
+      <td>Laertes</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2011</th>
+      <td>Michael Tiernan</td>
+      <td>actor</td>
+      <td>Policeman</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2011</th>
+      <td>Peter Wingfield</td>
+      <td>actor</td>
+      <td>Claudius</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>2011</th>
+      <td>Gillian Barber</td>
+      <td>actress</td>
+      <td>Gertrude</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2011</th>
+      <td>Lara Gilchrist</td>
+      <td>actress</td>
+      <td>Ophelia</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Thomas (II) Arnold</td>
+      <td>actor</td>
+      <td>Horatio</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Dean Gregory</td>
+      <td>actor</td>
+      <td>Lucianus</td>
+      <td>14</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Tachia Newall</td>
+      <td>actor</td>
+      <td>Francisco</td>
+      <td>13</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Tachia Newall</td>
+      <td>actor</td>
+      <td>Reynaldo</td>
+      <td>13</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Tachia Newall</td>
+      <td>actor</td>
+      <td>Priest</td>
+      <td>13</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>John Shrapnel</td>
+      <td>actor</td>
+      <td>Claudius</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>John Shrapnel</td>
+      <td>actor</td>
+      <td>Ghost</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Peter Singh</td>
+      <td>actor</td>
+      <td>Guildenstern</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Ben Stott</td>
+      <td>actor</td>
+      <td>Bernardo</td>
+      <td>12</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Ben Stott</td>
+      <td>actor</td>
+      <td>Osric</td>
+      <td>12</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Ben Stott</td>
+      <td>actor</td>
+      <td>Player Queen</td>
+      <td>12</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Ashley Zhangazha</td>
+      <td>actor</td>
+      <td>Laertes</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Claire Benedict</td>
+      <td>actress</td>
+      <td>Marcella</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Claire Benedict</td>
+      <td>actress</td>
+      <td>Player King</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Gillian Bevan</td>
+      <td>actress</td>
+      <td>Polonia</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Michelle Butterly</td>
+      <td>actress</td>
+      <td>Margaret</td>
+      <td>11</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Michelle Butterly</td>
+      <td>actress</td>
+      <td>1st Gravedigger</td>
+      <td>11</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Barbara Marten</td>
+      <td>actress</td>
+      <td>Gertrude</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Jodie McNee</td>
+      <td>actress</td>
+      <td>Rosencrantz</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Jodie McNee</td>
+      <td>actress</td>
+      <td>2nd Gravedigger</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Maxine Peake</td>
+      <td>actress</td>
+      <td>Hamlet</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Katie (II) West</td>
+      <td>actress</td>
+      <td>Ophelia</td>
+      <td>7</td>
+    </tr>
+  </tbody>
+</table>
+<p>314 rows × 4 columns</p>
+</div><p>Now I can do multiple <tt class="docutils literal">loc</tt>'s</p>
+<pre class="code python literal-block">
+<span class="n">c</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Hamlet'</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">2015</span><span class="p">]</span>
+</pre>
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>name</th>
+      <th>type</th>
+      <th>character</th>
+      <th>n</th>
+    </tr>
+    <tr>
+      <th>year</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2015</th>
+      <td>Thomas (II) Arnold</td>
+      <td>actor</td>
+      <td>Horatio</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Dean Gregory</td>
+      <td>actor</td>
+      <td>Lucianus</td>
+      <td>14</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Tachia Newall</td>
+      <td>actor</td>
+      <td>Francisco</td>
+      <td>13</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Tachia Newall</td>
+      <td>actor</td>
+      <td>Reynaldo</td>
+      <td>13</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Tachia Newall</td>
+      <td>actor</td>
+      <td>Priest</td>
+      <td>13</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>John Shrapnel</td>
+      <td>actor</td>
+      <td>Claudius</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>John Shrapnel</td>
+      <td>actor</td>
+      <td>Ghost</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Peter Singh</td>
+      <td>actor</td>
+      <td>Guildenstern</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Ben Stott</td>
+      <td>actor</td>
+      <td>Bernardo</td>
+      <td>12</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Ben Stott</td>
+      <td>actor</td>
+      <td>Osric</td>
+      <td>12</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Ben Stott</td>
+      <td>actor</td>
+      <td>Player Queen</td>
+      <td>12</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Ashley Zhangazha</td>
+      <td>actor</td>
+      <td>Laertes</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Claire Benedict</td>
+      <td>actress</td>
+      <td>Marcella</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Claire Benedict</td>
+      <td>actress</td>
+      <td>Player King</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Gillian Bevan</td>
+      <td>actress</td>
+      <td>Polonia</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Michelle Butterly</td>
+      <td>actress</td>
+      <td>Margaret</td>
+      <td>11</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Michelle Butterly</td>
+      <td>actress</td>
+      <td>1st Gravedigger</td>
+      <td>11</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Barbara Marten</td>
+      <td>actress</td>
+      <td>Gertrude</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Jodie McNee</td>
+      <td>actress</td>
+      <td>Rosencrantz</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Jodie McNee</td>
+      <td>actress</td>
+      <td>2nd Gravedigger</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Maxine Peake</td>
+      <td>actress</td>
+      <td>Hamlet</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2015</th>
+      <td>Katie (II) West</td>
+      <td>actress</td>
+      <td>Ophelia</td>
+      <td>7</td>
+    </tr>
+  </tbody>
+</table>
+</div><p>This is good, now let's reset the index</p>
+<pre class="code python literal-block">
+<span class="o">%%</span><span class="n">time</span>
+<span class="c1"># Let's toss year back!</span>
+<span class="n">c</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="s1">'year'</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre>
+<pre class="literal-block">
+CPU times: user 355 ms, sys: 52.8 ms, total: 408 ms
+Wall time: 408 ms
+</pre>
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>year</th>
+      <th>name</th>
+      <th>type</th>
+      <th>character</th>
+      <th>n</th>
+    </tr>
+    <tr>
+      <th>title</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>#1 Serial Killer</th>
+      <td>2013</td>
+      <td>Michael Alton</td>
+      <td>actor</td>
+      <td>Detective Roberts</td>
+      <td>17</td>
+    </tr>
+    <tr>
+      <th>#1 Serial Killer</th>
+      <td>2013</td>
+      <td>Aaron Aoki</td>
+      <td>actor</td>
+      <td>Plastic Bag Victim</td>
+      <td>21</td>
+    </tr>
+    <tr>
+      <th>#1 Serial Killer</th>
+      <td>2013</td>
+      <td>Zachary (X) Brown</td>
+      <td>actor</td>
+      <td>Africian American Teen</td>
+      <td>18</td>
+    </tr>
+    <tr>
+      <th>#1 Serial Killer</th>
+      <td>2013</td>
+      <td>Yvis Cannavale</td>
+      <td>actor</td>
+      <td>Homeless Man</td>
+      <td>25</td>
+    </tr>
+    <tr>
+      <th>#1 Serial Killer</th>
+      <td>2013</td>
+      <td>Patrick Chien</td>
+      <td>actor</td>
+      <td>Cleaver Victim</td>
+      <td>22</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+<div class="section" id="groupby">
+<h3>Groupby</h3>
+<p>This is another way of indexing the data.</p>
+<pre class="code python literal-block">
+<span class="c1"># Lets go to George Clooney now</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">cast</span><span class="p">[</span><span class="n">cast</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;George Clooney&quot;</span><span class="p">]</span>
+</pre>
+<p>Now let's tell pandas that we are only interested in
+<tt class="docutils literal">title, year and character</tt> of the data.</p>
+<p><tt class="docutils literal">groupby</tt> will set up hierarchical index for us.</p>
+<pre class="code python literal-block">
+<span class="n">c</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">'title'</span><span class="p">,</span> <span class="s1">'year'</span><span class="p">])</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+</pre>
+<pre class="literal-block">
+title                              year
+A Very Murray Christmas            2015    1
+Batman &amp; Robin                     1997    2
+Burn After Reading                 2008    1
+Confessions of a Dangerous Mind    2002    1
+Curdled                            1996    1
+Fantastic Mr. Fox                  2009    1
+From Dusk Till Dawn                1996    1
+Good Night, and Good Luck.         2005    1
+Gravity                            2013    1
+Hail, Caesar!                      2016    1
+Intolerable Cruelty                2003    1
+Leatherheads                       2008    1
+Michael Clayton                    2007    1
+Money Monster                      2016    1
+Morning Glory                      2010    1
+O Brother, Where Art Thou?         2000    1
+Ocean's Eleven                     2001    1
+Ocean's Thirteen                   2007    1
+Ocean's Twelve                     2004    1
+One Fine Day                       1996    1
+Out of Sight                       1998    1
+Return of the Killer Tomatoes!     1988    1
+Return to Horror High              1987    1
+Solaris                            2002    1
+South Park: Bigger Longer &amp; Uncut  1999    1
+Spy Kids                           2001    1
+Spy Kids 3-D: Game Over            2003    1
+Syriana                            2005    1
+The American                       2010    2
+The Book That Wrote Itself         1999    1
+The Descendants                    2011    1
+The Good German                    2006    1
+The Harvest                        1992    1
+The Ides of March                  2011    1
+The Limey                          1999    1
+The Men Who Stare at Goats         2009    1
+The Monuments Men                  2014    1
+The Peacemaker                     1997    1
+The Perfect Storm                  2000    1
+The Thin Red Line                  1998    1
+Three Kings                        1999    1
+Tomorrowland                       2015    1
+Unbecoming Age                     1992    1
+Up in the Air                      2009    1
+Welcome to Collinwood              2002    1
+dtype: int64
+</pre>
+<p>If you notice, the output is sorted by the title (first hierarchical
+index)</p>
+<p>Now let's find when was George Clooney least credited for in the movie</p>
+<pre class="code python literal-block">
+<span class="n">c</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">'year'</span><span class="p">])</span><span class="o">.</span><span class="n">n</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+</pre>
+<pre class="literal-block">
+year
+1987    15
+1988     2
+1992    23
+1996     2
+1997     2
+1998    14
+1999    11
+2000     1
+2001    36
+2002    17
+2003    22
+2004     3
+2005    15
+2006     1
+2007     6
+2008     5
+2009     1
+2010     1
+2011     2
+2013     2
+2014     1
+2015     4
+2016     2
+Name: n, dtype: float64
+</pre>
+<pre class="code python literal-block">
+<span class="c1"># Lets find how many films has he done in a decade!</span>
+<span class="n">c</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="s1">'year'</span><span class="p">]</span> <span class="o">//</span> <span class="mi">10</span> <span class="o">*</span> <span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">n</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+</pre>
+<pre class="literal-block">
+year
+1980     2
+1990    14
+2000    20
+2010    11
+dtype: int64
+</pre>
+<p>-- Ex4</p>
+<p>Let's try to find the number of roles that have been generating over the
+years for actors vs actresses</p>
+<pre class="code python literal-block">
+<span class="n">cast</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="n">cast</span><span class="o">.</span><span class="n">year</span> <span class="o">//</span><span class="mi">10</span> <span class="o">*</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cast</span><span class="o">.</span><span class="n">type</span><span class="p">])</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+</pre>
+<pre class="literal-block">
+year  type
+1890  actor           2
+      actress         1
+1900  actor          54
+      actress        16
+1910  actor       26788
+      actress     15343
+1920  actor       47018
+      actress     23192
+1930  actor      148389
+      actress     48477
+1940  actor      158390
+      actress     50221
+1950  actor      150803
+      actress     54838
+1960  actor      124646
+      actress     53789
+1970  actor      142324
+      actress     62026
+1980  actor      186874
+      actress     86576
+1990  actor      252832
+      actress    119776
+2000  actor      478039
+      actress    257463
+2010  actor      574954
+      actress    320245
+2020  actor          64
+      actress        27
+dtype: int64
+</pre>
+<p>This is the tricky part. Lets say we need to compare actors and
+actresses in 1900's. It's not easy to do that when they are stacked
+vertically because it might involve for example, getting some odd index
+and even index and it gets very messy.</p>
+<p>So to solve the problem.. we'll <tt class="docutils literal">unstack()</tt> it</p>
+<blockquote>
+The stack method turns column names into index values, and the
+unstack method turns index values into column names.</blockquote>
+<pre class="code python literal-block">
+<span class="n">c</span> <span class="o">=</span> <span class="n">cast</span><span class="p">[(</span><span class="n">cast</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">'actor'</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">cast</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">'actress'</span><span class="p">)]</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">'type'</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">year</span> <span class="o">//</span> <span class="mi">10</span> <span class="o">*</span> <span class="mi">10</span><span class="p">])</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+</pre>
+<pre class="code python literal-block">
+<span class="n">g</span><span class="o">.</span><span class="n">unstack</span><span class="p">()</span>
+</pre>
+<pre class="literal-block">
+/usr/local/lib/python2.7/site-packages/pandas/core/index.py:4072: FutureWarning: elementwise comparison failed; returning scalar instead, but in the future will perform elementwise comparison
+  return np.sum(name == np.asarray(self.names)) &gt; 1
+</pre>
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>year</th>
+      <th>1890</th>
+      <th>1900</th>
+      <th>1910</th>
+      <th>1920</th>
+      <th>1930</th>
+      <th>1940</th>
+      <th>1950</th>
+      <th>1960</th>
+      <th>1970</th>
+      <th>1980</th>
+      <th>1990</th>
+      <th>2000</th>
+      <th>2010</th>
+      <th>2020</th>
+    </tr>
+    <tr>
+      <th>type</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>actor</th>
+      <td>2</td>
+      <td>54</td>
+      <td>26788</td>
+      <td>47018</td>
+      <td>148389</td>
+      <td>158390</td>
+      <td>150803</td>
+      <td>124646</td>
+      <td>142324</td>
+      <td>186874</td>
+      <td>252832</td>
+      <td>478039</td>
+      <td>574954</td>
+      <td>64</td>
+    </tr>
+    <tr>
+      <th>actress</th>
+      <td>1</td>
+      <td>16</td>
+      <td>15343</td>
+      <td>23192</td>
+      <td>48477</td>
+      <td>50221</td>
+      <td>54838</td>
+      <td>53789</td>
+      <td>62026</td>
+      <td>86576</td>
+      <td>119776</td>
+      <td>257463</td>
+      <td>320245</td>
+      <td>27</td>
+    </tr>
+  </tbody>
+</table>
+</div><p>But this isn't what we wanted. We didn't want years to pop on the top.
+So we will pass the optional argument inside unstack.</p>
+<pre class="code python literal-block">
+<span class="n">u</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">unstack</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">u</span>
+</pre>
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>type</th>
+      <th>actor</th>
+      <th>actress</th>
+    </tr>
+    <tr>
+      <th>year</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1890</th>
+      <td>2</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1900</th>
+      <td>54</td>
+      <td>16</td>
+    </tr>
+    <tr>
+      <th>1910</th>
+      <td>26788</td>
+      <td>15343</td>
+    </tr>
+    <tr>
+      <th>1920</th>
+      <td>47018</td>
+      <td>23192</td>
+    </tr>
+    <tr>
+      <th>1930</th>
+      <td>148389</td>
+      <td>48477</td>
+    </tr>
+    <tr>
+      <th>1940</th>
+      <td>158390</td>
+      <td>50221</td>
+    </tr>
+    <tr>
+      <th>1950</th>
+      <td>150803</td>
+      <td>54838</td>
+    </tr>
+    <tr>
+      <th>1960</th>
+      <td>124646</td>
+      <td>53789</td>
+    </tr>
+    <tr>
+      <th>1970</th>
+      <td>142324</td>
+      <td>62026</td>
+    </tr>
+    <tr>
+      <th>1980</th>
+      <td>186874</td>
+      <td>86576</td>
+    </tr>
+    <tr>
+      <th>1990</th>
+      <td>252832</td>
+      <td>119776</td>
+    </tr>
+    <tr>
+      <th>2000</th>
+      <td>478039</td>
+      <td>257463</td>
+    </tr>
+    <tr>
+      <th>2010</th>
+      <td>574954</td>
+      <td>320245</td>
+    </tr>
+    <tr>
+      <th>2020</th>
+      <td>64</td>
+      <td>27</td>
+    </tr>
+  </tbody>
+</table>
+</div><pre class="code python literal-block">
+<span class="n">u</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">'line'</span><span class="p">)</span>
+</pre>
+<pre class="literal-block">
+&lt;matplotlib.axes._subplots.AxesSubplot at 0x10fdd3110&gt;
+</pre>
+<img alt="" src="output_76_1.png" />
+<p>To move the other way, we can use <tt class="docutils literal">stack()</tt> method</p>
+<pre class="code python literal-block">
+<span class="n">u</span><span class="o">.</span><span class="n">stack</span><span class="p">()</span>
+</pre>
+<pre class="literal-block">
+year  type
+1890  actor           2
+      actress         1
+1900  actor          54
+      actress        16
+1910  actor       26788
+      actress     15343
+1920  actor       47018
+      actress     23192
+1930  actor      148389
+      actress     48477
+1940  actor      158390
+      actress     50221
+1950  actor      150803
+      actress     54838
+1960  actor      124646
+      actress     53789
+1970  actor      142324
+      actress     62026
+1980  actor      186874
+      actress     86576
+1990  actor      252832
+      actress    119776
+2000  actor      478039
+      actress    257463
+2010  actor      574954
+      actress    320245
+2020  actor          64
+      actress        27
+dtype: int64
+</pre>
+<p>Lets try to find the trend between leading roles as actors vs supporting
+roles as actors.</p>
+<pre class="code python literal-block">
+<span class="n">c</span> <span class="o">=</span> <span class="n">cast</span><span class="p">[</span><span class="n">cast</span><span class="o">.</span><span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">]</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">'year'</span><span class="p">,</span> <span class="s1">'type'</span><span class="p">,</span> <span class="s1">'n'</span><span class="p">])</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">unstack</span><span class="p">(</span><span class="s1">'type'</span><span class="p">)</span>
+<span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">actor</span><span class="o">/</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">actor</span> <span class="o">+</span> <span class="n">c</span><span class="o">.</span><span class="n">actress</span><span class="p">))</span><span class="o">.</span><span class="n">unstack</span><span class="p">(</span><span class="s1">'n'</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+</pre>
+<pre class="literal-block">
+&lt;matplotlib.axes._subplots.AxesSubplot at 0x10f970b90&gt;
+</pre>
+<img alt="" src="output_80_1.png" />
+</div>
+</div>
+
+  </div>
+  <div class="tag-cloud">
+    <p>
+      <a href="http://localhost:8000/tag/python.html">python</a>
+      <a href="http://localhost:8000/tag/tutorials.html">tutorials</a>
+    </p>
+  </div>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'cuspedap';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+</article>
+
+    <footer>
+        <p>&copy; mohit 2016</p>
+<p>Built using <a href="http://getpelican.com" target="_blank">Pelican</a> - <a href="https://github.com/alexandrevicenzi/flex" target="_blank">Flex</a> theme by <a href="http://alexandrevicenzi.com" target="_blank">Alexandre Vicenzi</a></p>    </footer>
+  </main>
+
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "BlogPosting",
+  "name": "My super title",
+  "headline": "My super title",
+  "datePublished": "2016-04-20 10:20:00-04:00",
+  "dateModified": "2016-04-21 12:40:00-04:00",
+  "author": {
+    "@type": "Person",
+    "name": "mohit sharma",
+    "url": "http://localhost:8000/author/mohit-sharma.html"
+  },
+  "image": "{{ SITEURL }}/{{ THEME_STATIC_DIR }}/img/profile.png",
+  "url": "http://localhost:8000/imdb.html",
+  "description": "test ipynb to rest"
+}
+</script></body>
+</html>
