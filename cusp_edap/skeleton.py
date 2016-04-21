@@ -39,8 +39,8 @@ def fib(n):
     """
     assert n > 0
     a, b = 1, 1
-    for i in range(n-1):
-        a, b = b, a+b
+    for i in range(n - 1):
+        a, b = b, a + b
     return a
 
 
@@ -68,8 +68,11 @@ def parse_args(args):
 
 def main(args):
     args = parse_args(args)
-    print("The {}-th Fibonacci number is {}".format(args.n, fib(args.n)))
+    n = args.n
+    fibn = fib(args.n)
+    print("The {}-th Fibonacci number is {}".format(n, fibn))
     _logger.info("Script ends here")
+    return fibn
 
 
 def run():
